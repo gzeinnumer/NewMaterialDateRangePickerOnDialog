@@ -44,4 +44,10 @@
         android:layout_height="wrap_content"
         android:text="Tanggal yang dipilih (Start End) :" />
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="KAO Leave"/>
+
 </LinearLayout>

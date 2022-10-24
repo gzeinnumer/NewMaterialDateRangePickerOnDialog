@@ -9,11 +9,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.datepicker.CalendarConstraints;
+import com.google.android.material.datepicker.CompositeDateValidator;
+import com.google.android.material.datepicker.DateValidatorPointBackward;
 import com.google.android.material.datepicker.DateValidatorPointForward;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -48,6 +51,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 initDatePicker4();
+            }
+        });
+        findViewById(R.id.btn5).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                initDatePicker5();
             }
         });
     }
@@ -165,6 +174,52 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), awal +" - "+akhir, Toast.LENGTH_SHORT).show();
                 TextView tv = findViewById(R.id.tv4);
                 tv.setText("Tanggal yang dipilih (Start End) : "+awal +" - "+akhir);
+
+            }
+        });
+        materialDatePicker.addOnNegativeButtonClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getApplicationContext(), "Tidak jadi memilih", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void initDatePicker5(){
+        MaterialDatePicker.Builder<Pair<Long, Long>> builder = MaterialDatePicker.Builder.dateRangePicker();
+
+        Calendar f = Calendar.getInstance();
+        f.add(Calendar.DATE, -5);
+        Calendar e = Calendar.getInstance();
+        e.add(Calendar.DATE,0);
+
+        CalendarConstraints.DateValidator dateValidatorMin = DateValidatorPointForward.from(f.getTimeInMillis());
+        CalendarConstraints.DateValidator dateValidatorMax = DateValidatorPointBackward.before(e.getTimeInMillis());
+
+        ArrayList<CalendarConstraints.DateValidator> listValidators = new ArrayList<>();
+        listValidators.add(dateValidatorMin);
+        listValidators.add(dateValidatorMax);
+        listValidators.add(new DateValidatorWeekdays());
+
+        CalendarConstraints.DateValidator validators = CompositeDateValidator.allOf(listValidators);
+
+        CalendarConstraints.Builder calendarConstraints = new CalendarConstraints.Builder();
+        calendarConstraints.setValidator(validators);
+
+
+        builder.setCalendarConstraints(calendarConstraints.build());
+        MaterialDatePicker<Pair<Long, Long>> materialDatePicker = builder.build();
+        materialDatePicker.show(getSupportFragmentManager(),"date_picker_tag");
+
+        materialDatePicker.addOnPositiveButtonClickListener(new MaterialPickerOnPositiveButtonClickListener<Pair<Long, Long>>() {
+            @Override
+            public void onPositiveButtonClick(Pair<Long, Long> selection) {
+                SimpleDateFormat formater = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+                String awal = formater.format(new Date(selection.first));
+                String akhir = formater.format(new Date(selection.second));
+                Toast.makeText(getApplicationContext(), awal +" - "+akhir, Toast.LENGTH_SHORT).show();
+//                TextView tv = findViewById(R.id.tv4);
+//                tv.setText("Tanggal yang dipilih (Start End) : "+awal +" - "+akhir);
 
             }
         });
